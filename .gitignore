@@ -36,3 +36,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Skills
 .agents
 skills-lock.json
+
+# Database files
+tasks.db
+tasks.db-shm
+tasks.db-wal
