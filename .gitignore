@@ -41,3 +41,6 @@ skills-lock.json
 *.db
 *.db-shm
 *.db-wal
+tasks.db
+tasks.db-shm
+tasks.db-wal
