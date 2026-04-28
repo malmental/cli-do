@@ -37,29 +37,24 @@ export function ControlsPanel() {
 
       <Box flexDirection="column" gap={0}>
         <ControlGroup
-          title="Navigate"
-          color="yellow"
-          items={[
-            { key: "j/k/↑↓", label: "move selection" },
-            { key: "Enter", label: "open selected task" },
-          ]}
-        />
-
-        <ControlGroup
-          title="Task Actions"
+          title="Status"
           color="green"
           items={[
-            { key: "N", label: "new task" },
-            { key: "E", label: "edit selected task" },
             { key: "D", label: "mark as done" },
             { key: "S", label: "mark as in progress" },
             { key: "P", label: "mark as open" },
           ]}
         />
-        <Box flexDirection="column" gap={0}>
-          <Text bold color="magenta">Back</Text>
-          <Text color="magenta">[H/Q/Esc]</Text>
-        </Box>
+
+        <ControlGroup
+          title="Task"
+          color="red"
+          items={[
+            { key: "N", label: "new task" },
+            { key: "E", label: "edit selected task" },
+            { key: "X", label: "delete selected task" },
+          ]}
+        />
       </Box>
     </Box>
   );
