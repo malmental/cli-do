@@ -9,14 +9,14 @@ export function TaskFormScreen() {
 
   return (
     <Box flexDirection="column" gap={2} padding={2} borderStyle="round" borderColor="cyan">
-      <Text bold>{isEdit ? "Editar Tarea" : "Nueva Tarea"}</Text>
+      <Text bold>{isEdit ? "Edit Task" : "New Task"}</Text>
 
       <Box flexDirection="column" gap={1}>
-        <Text dim>Titulo:</Text>
+        <Text color="gray">Title:</Text>
         <Box>
           <Text bold color="cyan">&gt; </Text>
           <Text>{title}</Text>
-          <Text blink>{"|"}</Text>
+          <Text>▋</Text>
         </Box>
       </Box>
 
@@ -25,7 +25,7 @@ export function TaskFormScreen() {
           <Text
             key={cat.id}
             bold={selectedCategoryIndex === i}
-            dim={selectedCategoryIndex !== i}
+            dimColor={selectedCategoryIndex !== i}
           >
             [{cat.name}]
           </Text>
@@ -33,12 +33,12 @@ export function TaskFormScreen() {
       </Box>
 
       <Box flexDirection="row" gap={1}>
-        <Text dim>Estado:</Text>
+        <Text color="gray">Status:</Text>
         {statusOptions.map((opt, i) => (
           <Text
             key={opt.value}
             bold={selectedStatusIndex === i}
-            dim={selectedStatusIndex !== i}
+            dimColor={selectedStatusIndex !== i}
             color={statusColors[opt.value]}
           >
             [{opt.label}]
@@ -46,8 +46,8 @@ export function TaskFormScreen() {
         ))}
       </Box>
 
-      <Text dim small>
-        Enter = guardar | Esc = cancelar | ←→ = categoria | ↑↓ = estado
+      <Text color="gray">
+        Enter = save | H/Q/Esc = cancel | ←→ = category | ↑↓ = status
       </Text>
     </Box>
   );

@@ -51,45 +51,56 @@ export const statusColors: Record<TaskStatus, string> = {
 };
 
 export const statusLabels: Record<TaskStatus, string> = {
-  pending: "Abierta",
-  in_progress: "En Proceso",
-  completed: "Cerrada",
+  pending: "Open",
+  in_progress: "In Progress",
+  completed: "Done",
 };
 
 export const statusOptions = [
-  { value: "pending" as TaskStatus, label: "Abierta" },
-  { value: "in_progress" as TaskStatus, label: "En Proceso" },
-  { value: "completed" as TaskStatus, label: "Cerrada" },
+  { value: "pending" as TaskStatus, label: "Open" },
+  { value: "in_progress" as TaskStatus, label: "In Progress" },
+  { value: "completed" as TaskStatus, label: "Done" },
 ];
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [screen, setScreen] = useState<Screen>("list");
+  const [screen, setScreenState] = useState<Screen>("list");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedStatusIndex, setSelectedStatusIndex] = useState(0);
 
+  const clearTerminal = useCallback(() => {
+    process.stdout.write("\x1b[2J\x1b[H");
+  }, []);
+
+  const setScreen = useCallback((nextScreen: Screen) => {
+    clearTerminal();
+    setScreenState(nextScreen);
+  }, [clearTerminal]);
+
   const loadData = useCallback(() => {
     try {
       const db = getDatabase();
       const cats = db
-        .query<{ id: string; name: string; created_at: number }>(
+        .query(
           "SELECT * FROM categories ORDER BY name"
         )
-        .all();
+        .all() as { id: string; name: string; created_at: number }[];
       const tks = db
-        .query<{
+        .query(
+          "SELECT * FROM tasks ORDER BY created_at DESC"
+        )
+        .all() as {
           id: string;
           title: string;
           status: TaskStatus;
           category_id: string;
           created_at: number;
           completed_at: number | null;
-        }>("SELECT * FROM tasks ORDER BY created_at DESC")
-        .all();
+        }[];
 
       setCategories(cats.map((r) => ({ id: r.id, name: r.name, createdAt: r.created_at })));
       setTasks(tks.map((r) => ({
@@ -126,7 +137,9 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     ]);
     setScreen("list");
     setTitle("");
-  }, [title, categories, selectedCategoryIndex]);
+    setEditingTaskId(null);
+    setSelectedIndex(0);
+  }, [title, categories, selectedCategoryIndex, setScreen]);
 
   const updateTask = useCallback(() => {
     if (!title.trim() || !editingTaskId) return;
@@ -136,18 +149,19 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     const db = getDatabase();
     db.query(
       "UPDATE tasks SET title = ?, category_id = ?, status = ? WHERE id = ?"
-    ).run(title.trim(), catId, statusOptions[selectedStatusIndex].value, editingTaskId);
+    ).run(title.trim(), catId, statusOptions[selectedStatusIndex]?.value ?? "pending", editingTaskId);
     setTasks((prev) =>
       prev.map((t) =>
         t.id === editingTaskId
-          ? { ...t, title: title.trim(), categoryId: catId, status: statusOptions[selectedStatusIndex].value }
+          ? { ...t, title: title.trim(), categoryId: catId, status: statusOptions[selectedStatusIndex]?.value ?? "pending" }
           : t
       )
     );
     setScreen("list");
     setTitle("");
     setEditingTaskId(null);
-  }, [title, categories, selectedCategoryIndex, editingTaskId, selectedStatusIndex]);
+    setSelectedIndex(0);
+  }, [title, categories, selectedCategoryIndex, editingTaskId, selectedStatusIndex, setScreen]);
 
   const completeTask = useCallback((id: string) => {
     const db = getDatabase();
