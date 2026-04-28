@@ -20,6 +20,7 @@ CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Bu
 
 - **Keyboard-first design** — No mouse required
 - **Vim-style navigation** — j/k to move, Enter to select
+- **Single-window dashboard** — Paged list with controls panel, no scrolling
 - **Task states** — Open, In Progress, Done
 - **Categories** — Personal, Work (and custom ones you add)
 - **Splash screen** — Beautiful ASCII logo on startup
@@ -51,7 +52,7 @@ bun dev
 
 ### First Run
 
-When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. After 1.5 seconds (or pressing any key), it transitions to the main task list.
+When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. Press any key to continue to the main dashboard.
 
 ---
 
@@ -61,8 +62,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 
 | Key | Action |
 |-----|--------|
-| `j` / `↓` | Move down |
-| `k` / `↑` | Move up |
+| `j` / `k` / `↓` / `↑` | Move selection |
 | `Enter` | View task details |
 | `n` | Create new task |
 | `e` | Edit selected task |
@@ -76,7 +76,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | Key | Action |
 |-----|--------|
 | `Enter` | Save task |
-| `Esc` | Cancel and go back |
+| `H` / `Q` / `Esc` | Cancel and go back |
 | `←` / `→` | Change category |
 | `↑` / `↓` | Change status |
 | `Backspace` | Delete character |
@@ -85,7 +85,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 
 | Key | Action |
 |-----|--------|
-| `Esc` | Go back to list |
+| `H` / `Q` / `Esc` | Go back to list |
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
@@ -98,17 +98,29 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 cli-do/
 ├── src/
 │   ├── index.tsx           # Entry point
-│   ├── App.tsx             # Main app with routing + splash screen
-│   ├── components/
-│   │   ├── Header.tsx      # App header with shortcuts
-│   │   └── Footer.tsx      # Task count + navigation hints
-│   ├── screens/
-│   │   ├── SplashScreen.tsx    # ASCII logo splash
-│   │   ├── TaskListScreen.tsx   # Main task list
-│   │   ├── TaskFormScreen.tsx   # Create/edit form
-│   │   └── TaskDetailScreen.tsx # Task detail view
+│   ├── App.tsx             # Main app shell + splash screen + key routing
+│   ├── application/
+│   │   └── task/
+│   │       ├── sqlite-task-repository.ts # SQLite persistence adapter
+│   │       ├── task-repository.ts        # Repository contract
+│   │       └── task-selectors.ts         # Derived task selectors
 │   ├── context/
-│   │   └── TaskContext.tsx     # State management (state-actions-meta pattern)
+│   │   ├── TaskContext.tsx  # Context provider + repository wiring
+│   │   ├── task-constants.ts # Shared status labels/colors/options
+│   │   └── task-state.ts    # Reducer and UI state model
+│   ├── components/
+│   │   ├── Header.tsx      # App header
+│   │   ├── Footer.tsx      # Task count + navigation hints
+│   │   └── ControlsPanel.tsx # Dashboard control legend
+│   ├── screens/
+│   │   ├── TaskDashboardScreen.tsx # Dashboard shell with paged list + controls
+│   │   ├── TaskListScreen.tsx      # Paged task list renderer
+│   │   ├── TaskFormScreen.tsx      # Create/edit form
+│   │   └── TaskDetailScreen.tsx    # Task detail view
+│   ├── hooks/
+│   │   ├── useAppKeyboard.ts # Global keyboard router for the app shell
+│   │   ├── useTerminalSize.ts   # Terminal size helper for responsive layout
+│   │   └── useTaskPager.ts      # Paged dashboard window helper
 │   ├── db/
 │   │   ├── database.ts     # SQLite singleton
 │   │   └── schema.ts       # Table definitions
@@ -125,13 +137,15 @@ cli-do/
 
 ### State Management
 
-The app uses a **state-actions-meta** pattern via React Context:
+The app uses a **state-actions-meta** pattern via React Context, with a reducer behind the provider:
 
 ```
 state     → Current values (tasks, categories, UI state)
-actions   → Mutation functions (createTask, updateTask, etc.)
+actions   → Mutation functions and screen transitions
 meta      → Computed values (selectedTask, filteredTasks)
 ```
+
+`TaskContext` owns composition, not raw SQL. State transitions live in `task-state.ts`, while persistence is delegated to the repository adapter under `src/application/task/`.
 
 ### Database
 
@@ -146,6 +160,15 @@ SQLite via `bun:sqlite`. Data persists in `tasks.db` next to the executable.
 Four screens: `list` → `create` → `edit` | `detail` → `list`
 
 The `App` component manages state via `TaskProvider` and routes to the appropriate screen based on `state.screen`.
+
+### Presentation Layout
+
+The dashboard view uses a fixed-height hero area and a paged task window so the UI stays within a single terminal screen. The list and controls are rendered side by side, and the current page is derived from the selected task index and terminal size through `useTaskPager()`.
+
+### Documentation
+
+- [File Reference Library](docs/reference/index.md) - Academic, file-by-file explanation of the current codebase.
+- [Architecture Refactor](docs/architecture-refactor.md) - Layering and modularization plan for the project.
 
 ---
 
