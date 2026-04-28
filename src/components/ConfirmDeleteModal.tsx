@@ -22,7 +22,7 @@ export function ConfirmDeleteModal({
       >
         <Text bold color="red">Delete task?</Text>
         <Text color="white" wrap="truncate-end">{taskTitle}</Text>
-        <Text dimColor>Press Y to confirm or Shift+Tab + any key/N to cancel.</Text>
+        <Text dimColor>Press Y to confirm or Shift+Tab + any key to cancel.</Text>
       </Box>
     </Box>
   );

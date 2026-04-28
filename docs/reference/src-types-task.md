@@ -6,6 +6,7 @@ This module defines the task domain vocabulary for the entire application. It is
 
 ## Responsibilities
 
+- Declare the `Screen` union (`list`, `create`, `edit`, `detail`).
 - Declare the `TaskStatus` union.
 - Declare the `Task` and `Category` interfaces.
 - Declare the form-facing `TaskInput` and `TaskUpdate` shapes.
@@ -17,6 +18,7 @@ This file shows the role of a domain model in a small application. The model is 
 
 ## Key Concepts
 
+- `Screen` defines the active terminal view for navigation.
 - `TaskStatus` is the lifecycle axis of a task.
 - `Task` represents a persisted record with identity and timestamps.
 - `Category` groups tasks into user-facing buckets.

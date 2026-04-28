@@ -1,7 +1,8 @@
-import type { Category, Task } from "../types/Task";
+import type { Category, Task, Screen } from "../types/Task";
+
+export type { Screen } from "../types/Task";
 
 // UI state and reducer for the task workflow. Keeps screen state and form state separate from persistence.
-export type Screen = "list" | "create" | "edit" | "detail";
 
 export interface TaskState {
   tasks: Task[];

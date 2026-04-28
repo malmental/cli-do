@@ -6,6 +6,8 @@
  * common derived values.
  */
 
+export type Screen = "list" | "create" | "edit" | "detail";
+
 export type TaskStatus = "pending" | "in_progress" | "completed";
 
 /**
