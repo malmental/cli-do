@@ -1,31 +1,84 @@
-import React, { useEffect } from "react";
-import { Box, useInput } from "ink";
-import { TaskProvider, useTask, statusOptions, Screen } from "./context/TaskContext";
+import React, { useState } from "react";
+import { Box, Text, useInput } from "ink";
+import { TaskProvider, useTask, statusOptions } from "./context/TaskContext";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { TaskListScreen } from "./screens/TaskListScreen";
+import { TaskDashboardScreen } from "./screens/TaskDashboardScreen";
 import { TaskFormScreen } from "./screens/TaskFormScreen";
 import { TaskDetailScreen } from "./screens/TaskDetailScreen";
 
+const ASCII_LOGO = `
+  ░██████  ░██ ░██                   ░██
+ ░██   ░██ ░██                       ░██
+░██        ░██ ░██             ░████████  ░███████
+░██        ░██ ░██            ░██    ░██ ░██    ░██
+░██        ░██ ░██            ░██    ░██ ░██    ░██
+ ░██   ░██ ░██ ░██            ░██   ░███ ░██    ░██
+  ░██████  ░██ ░██░██████████  ░█████░██  ░███████
+`;
+
+function SplashView({ onStart }: { onStart: () => void }) {
+  useInput(() => {
+    onStart();
+  });
+
+  return (
+    <Box flexDirection="column" justifyContent="center" alignItems="center" flexGrow={1}>
+      <Box
+        flexDirection="column"
+        alignItems="center"
+        gap={1}
+        padding={2}
+        borderStyle="round"
+        borderColor="white"
+      >
+        <Text bold color="cyan">{ASCII_LOGO}</Text>
+        <Text bold color="white">Your personal Task Manager for Terminal</Text>
+      </Box>
+      <Box marginTop={3}>
+        <Text dimColor>Press any key to continue...by Salem.deµ</Text>
+      </Box>
+    </Box>
+  );
+}
+
 function AppContent() {
   const { state, actions, meta } = useTask();
-  const { screen, selectedIndex, filteredTasks, categories, title, selectedCategoryIndex, selectedStatusIndex, editingTaskId } = state;
-  const { selectedTask } = meta;
+  const screen = state.screen;
+  const tasks = state.tasks;
+  const categories = state.categories;
+  const selectedIndex = state.selectedIndex;
+  const title = state.title;
+  const selectedCategoryIndex = state.selectedCategoryIndex;
+  const selectedStatusIndex = state.selectedStatusIndex;
+  const selectedTask = meta.selectedTask;
+
+  const isBackKey = (input: string, key: { escape: boolean; ctrl: boolean }) =>
+    key.escape || input === "q" || input === "h" || (key.ctrl && input === "b");
+
+  const goToList = (resetForm = false) => {
+    actions.setScreen("list");
+
+    if (resetForm) {
+      actions.setTitle("");
+      actions.setEditingTaskId(null);
+      actions.setSelectedCategoryIndex(0);
+      actions.setSelectedStatusIndex(0);
+      actions.setSelectedIndex(0);
+    }
+  };
 
   useInput((input, key) => {
     if (screen === "create" || screen === "edit") {
-      if (key.escape) {
-        actions.setScreen("list");
-        actions.setTitle("");
+      if (isBackKey(input, key)) {
+        goToList(true);
         return;
       }
       if (key.return) {
-        if (title.trim()) {
-          if (screen === "create") {
-            actions.createTask();
-          } else {
-            actions.updateTask();
-          }
+        if (screen === "create") {
+          actions.createTask();
+        } else {
+          actions.updateTask();
         }
         return;
       }
@@ -34,22 +87,22 @@ function AppContent() {
         return;
       }
       if (key.leftArrow) {
-        actions.setSelectedCategoryIndex(Math.max(selectedCategoryIndex - 1, 0));
+        if (selectedCategoryIndex > 0) actions.setSelectedCategoryIndex(selectedCategoryIndex - 1);
         return;
       }
       if (key.rightArrow) {
-        actions.setSelectedCategoryIndex(Math.min(selectedCategoryIndex + 1, categories.length - 1));
+        if (selectedCategoryIndex < categories.length - 1) actions.setSelectedCategoryIndex(selectedCategoryIndex + 1);
         return;
       }
       if (key.upArrow) {
-        actions.setSelectedStatusIndex(Math.max(selectedStatusIndex - 1, 0));
+        if (selectedStatusIndex > 0) actions.setSelectedStatusIndex(selectedStatusIndex - 1);
         return;
       }
       if (key.downArrow) {
-        actions.setSelectedStatusIndex(Math.min(selectedStatusIndex + 1, statusOptions.length - 1));
+        if (selectedStatusIndex < statusOptions.length - 1) actions.setSelectedStatusIndex(selectedStatusIndex + 1);
         return;
       }
-      if (input && input.length === 1 && !key.ctrl && !key.meta) {
+      if (input) {
         actions.setTitle(title + input);
         return;
       }
@@ -57,8 +110,8 @@ function AppContent() {
     }
 
     if (screen === "detail") {
-      if (key.escape) {
-        actions.setScreen("list");
+      if (isBackKey(input, key)) {
+        goToList();
         return;
       }
       if (input === "d" && selectedTask && selectedTask.status !== "completed") {
@@ -79,23 +132,31 @@ function AppContent() {
     if (input === "n") {
       actions.setScreen("create");
       actions.setTitle("");
+      actions.setEditingTaskId(null);
       actions.setSelectedCategoryIndex(0);
       actions.setSelectedStatusIndex(0);
+      actions.setSelectedIndex(0);
       return;
     }
 
-    if (key.downArrow || input === "j") {
-      actions.setSelectedIndex(Math.min(selectedIndex + 1, filteredTasks.length - 1));
+    if (input === "j" || key.downArrow) {
+      if (tasks.length > 0) {
+        actions.setSelectedIndex(Math.min(selectedIndex + 1, tasks.length - 1));
+      }
       return;
     }
 
-    if (key.upArrow || input === "k") {
-      actions.setSelectedIndex(Math.max(selectedIndex - 1, 0));
+    if (input === "k" || key.upArrow) {
+      if (tasks.length > 0) {
+        actions.setSelectedIndex(Math.max(0, selectedIndex - 1));
+      }
       return;
     }
 
-    if (key.return && selectedTask) {
-      actions.setScreen("detail");
+    if (key.return) {
+      if (tasks.length > 0) {
+        actions.setScreen("detail");
+      }
       return;
     }
 
@@ -105,6 +166,7 @@ function AppContent() {
       actions.setSelectedCategoryIndex(catIdx >= 0 ? catIdx : 0);
       const statusIdx = statusOptions.findIndex(s => s.value === selectedTask.status);
       actions.setSelectedStatusIndex(statusIdx >= 0 ? statusIdx : 0);
+      actions.setEditingTaskId(selectedTask.id);
       actions.setScreen("edit");
       return;
     }
@@ -130,27 +192,36 @@ function AppContent() {
     }
   });
 
+  let mainContent;
+  if (screen === "create" || screen === "edit") {
+    mainContent = <TaskFormScreen />;
+  } else if (screen === "detail") {
+    mainContent = <TaskDetailScreen />;
+  } else {
+    mainContent = <TaskDashboardScreen />;
+  }
+
   return (
-    <Box flexDirection="column" flexGrow={1} padding={1}>
+    <Box key={screen} flexDirection="column" flexGrow={1} padding={1}>
       <Header />
-
-      {screen === "create" || screen === "edit" ? (
-        <TaskFormScreen />
-      ) : screen === "detail" ? (
-        <TaskDetailScreen />
-      ) : (
-        <TaskListScreen />
-      )}
-
+      {mainContent}
       <Footer />
     </Box>
   );
 }
 
 export function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <TaskProvider>
-      <AppContent />
+      <Box flexDirection="column" flexGrow={1} padding={1}>
+        {showSplash ? (
+          <SplashView onStart={() => setShowSplash(false)} />
+        ) : (
+          <AppContent />
+        )}
+      </Box>
     </TaskProvider>
   );
 }
