@@ -74,8 +74,8 @@ export interface TaskUpdate {
  */
 export function getDaysTaken(task: Task): number | null {
   if (!task.completedAt || !task.createdAt) return null;
-  const diffMs = task.completedAt - task.createdAt;
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffSeconds = task.completedAt - task.createdAt;
+  return Math.floor(diffSeconds / 86400);
 }
 
 /**

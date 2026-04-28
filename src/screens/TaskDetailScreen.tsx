@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useTask, statusColors, statusLabels } from "../context/TaskContext";
+import { TaskDetailControlsPanel } from "../components/TaskDetailControlsPanel";
 
 export function TaskDetailScreen() {
   const { meta, state } = useTask();
@@ -12,54 +13,46 @@ export function TaskDetailScreen() {
 
   const catName = categories.find((c) => c.id === task.categoryId)?.name ?? "";
   const createdDate = new Date(task.createdAt * 1000).toLocaleDateString();
-  const daysText = task.completedAt && task.createdAt
-    ? ` (${Math.floor((task.completedAt - task.createdAt) / 86400)} days)`
-    : "";
 
   return (
-    <Box flexDirection="column" gap={2} padding={2} borderStyle="round" borderColor="cyan">
-      <Text bold>{task.title}</Text>
+    <Box flexDirection="column" flexGrow={1} gap={1}>
+      <Box
+        flexDirection="row"
+        flexGrow={1}
+        gap={1}
+      >
+        <Box
+          flexDirection="column"
+          flexGrow={2}
+          borderStyle="round"
+          borderColor="cyan"
+          padding={2}
+          gap={2}
+        >
+          <Text bold>{task.title}</Text>
 
-      <Box gap={1}>
-        <Text color="gray">Category:</Text>
-        <Text>{catName}</Text>
-      </Box>
+          <Box gap={1}>
+            <Text color="gray">Category:</Text>
+            <Text>{catName}</Text>
+          </Box>
 
-      <Box gap={1}>
-        <Text color="gray">Status:</Text>
-        <Text color={statusColors[task.status]}>
-          [{statusLabels[task.status]}]
-        </Text>
-      </Box>
+          <Box gap={1}>
+            <Text color="gray">Status:</Text>
+            <Text color={statusColors[task.status]}>
+              [{statusLabels[task.status]}]
+            </Text>
+          </Box>
 
-      <Text color="gray">Created: {createdDate}</Text>
+          <Text color="gray">Created: {createdDate}</Text>
 
-      {task.completedAt && (
-        <Text color="green">
-          Completed{daysText}
-        </Text>
-      )}
+          <Box marginTop={1}>
+            <Text color="gray">Shift+Tab + any key = back</Text>
+          </Box>
+        </Box>
 
-      <Box flexDirection="row" gap={2} marginTop={1}>
-        {task.status !== "completed" && (
-          <Text color="green">
-            [D: done]
-          </Text>
-        )}
-        {task.status !== "in_progress" && (
-          <Text color="cyan">
-            [S: start]
-          </Text>
-        )}
-        {task.status !== "pending" && (
-          <Text color="yellow">
-            [P: pending]
-          </Text>
-        )}
-      </Box>
-
-      <Box marginTop={1}>
-        <Text color="gray">H/Q/Esc = back</Text>
+        <Box flexDirection="column" flexGrow={1}>
+          <TaskDetailControlsPanel />
+        </Box>
       </Box>
     </Box>
   );

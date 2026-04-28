@@ -46,8 +46,15 @@ export function TaskFormScreen() {
         ))}
       </Box>
 
-      <Text color="gray">
-        Enter = save | H/Q/Esc = cancel | ←→ = category | ↑↓ = status
+      <Text>
+        {"Enter = save | "}
+        <Text color="magenta">Shift+Tab + any key = back</Text>
+        {" | "}
+        <Text color="cyan">←→ = category</Text>
+        {" | "}
+        <Text color="green">↑↓ = status</Text>
+        {isEdit ? " | " : ""}
+        {isEdit ? <Text color="red">X = delete</Text> : null}
       </Text>
     </Box>
   );

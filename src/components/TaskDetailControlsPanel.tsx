@@ -23,7 +23,7 @@ function ControlGroup({
   );
 }
 
-export function ControlsPanel() {
+export function TaskDetailControlsPanel() {
   return (
     <Box
       flexDirection="column"
@@ -50,11 +50,14 @@ export function ControlsPanel() {
           title="Task"
           color="red"
           items={[
-            { key: "N", label: "new task" },
-            { key: "E", label: "edit selected task" },
-            { key: "X", label: "delete selected task" },
+            { key: "X", label: "delete task" },
           ]}
         />
+
+        <Box flexDirection="column" gap={0}>
+          <Text bold color="magenta">Back</Text>
+          <Text color="magenta">[Shift+Tab + any key]</Text>
+        </Box>
       </Box>
     </Box>
   );

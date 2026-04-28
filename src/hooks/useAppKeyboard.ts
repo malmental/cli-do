@@ -3,6 +3,19 @@ import type { Category, Task } from "../types/Task";
 import type { Screen } from "../context/task-state";
 import { statusOptions } from "../context/task-constants";
 
+type InputKey = {
+  ctrl: boolean;
+  return: boolean;
+  tab: boolean;
+  shift: boolean;
+  backspace: boolean;
+  delete: boolean;
+  leftArrow: boolean;
+  rightArrow: boolean;
+  upArrow: boolean;
+  downArrow: boolean;
+};
+
 // Central keyboard router for the app shell. It keeps Ink input handling out of App.tsx.
 interface AppKeyboardActions {
   setScreen: (screen: Screen) => void;
@@ -11,12 +24,16 @@ interface AppKeyboardActions {
   setSelectedStatusIndex: (index: number) => void;
   setSelectedIndex: (index: number) => void;
   setEditingTaskId: (id: string | null) => void;
+  setDeleteConfirmationTaskId: (id: string | null) => void;
   createTask: () => void;
   updateTask: () => void;
   completeTask: (id: string) => void;
   startTask: (id: string) => void;
   pendingTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  requestDeleteTask: (id: string) => void;
+  confirmDeleteTask: () => void;
+  cancelDeleteTask: () => void;
 }
 
 interface UseAppKeyboardParams {
@@ -28,6 +45,7 @@ interface UseAppKeyboardParams {
   selectedCategoryIndex: number;
   selectedStatusIndex: number;
   selectedTask: Task | null;
+  deleteConfirmationTaskId: string | null;
   actions: AppKeyboardActions;
 }
 
@@ -40,10 +58,10 @@ export function useAppKeyboard({
   selectedCategoryIndex,
   selectedStatusIndex,
   selectedTask,
+  deleteConfirmationTaskId,
   actions,
 }: UseAppKeyboardParams) {
-  const isBackKey = (input: string, key: { escape: boolean; ctrl: boolean }) =>
-    key.escape || input === "q" || input === "h" || (key.ctrl && input === "b");
+  const isBackKey = (key: InputKey) => key.tab && key.shift;
 
   const goToList = (resetForm = false) => {
     actions.setScreen("list");
@@ -58,9 +76,31 @@ export function useAppKeyboard({
   };
 
   useInput((input, key) => {
+    if (deleteConfirmationTaskId) {
+      if (input === "y" || key.return) {
+        actions.confirmDeleteTask();
+        return;
+      }
+      if (input === "n" || isBackKey(key)) {
+        actions.cancelDeleteTask();
+        return;
+      }
+      return;
+    }
+
     if (screen === "create" || screen === "edit") {
-      if (isBackKey(input, key)) {
-        goToList(true);
+      if (isBackKey(key)) {
+        actions.setScreen("list");
+        actions.setTitle("");
+        actions.setEditingTaskId(null);
+        actions.setSelectedCategoryIndex(0);
+        actions.setSelectedStatusIndex(0);
+        actions.setSelectedIndex(0);
+        actions.setDeleteConfirmationTaskId(null);
+        return;
+      }
+      if (input === "x" && screen === "edit" && selectedTask) {
+        actions.requestDeleteTask(selectedTask.id);
         return;
       }
       if (key.return) {
@@ -99,7 +139,7 @@ export function useAppKeyboard({
     }
 
     if (screen === "detail") {
-      if (isBackKey(input, key)) {
+      if (isBackKey(key)) {
         goToList();
         return;
       }
@@ -176,7 +216,7 @@ export function useAppKeyboard({
     }
 
     if (input === "x" && selectedTask) {
-      actions.deleteTask(selectedTask.id);
+      actions.requestDeleteTask(selectedTask.id);
       return;
     }
   });

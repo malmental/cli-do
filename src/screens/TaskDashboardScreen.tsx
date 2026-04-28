@@ -33,7 +33,7 @@ export function TaskDashboardScreen() {
         alignItems="center"
       >
         <Text dimColor>This is CLI_do</Text>
-        <Text color="gray">Mouse free, start by adding a Task with N</Text>
+        <Text color="gray">A mouse free To-Do task manager, start pressing N</Text>
       </Box>
 
       <Box flexDirection="row" flexGrow={2} gap={1}>

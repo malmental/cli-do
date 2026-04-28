@@ -9,9 +9,11 @@ export interface TaskState {
   screen: Screen;
   selectedIndex: number;
   editingTaskId: string | null;
+  deleteConfirmationTaskId: string | null;
   title: string;
   selectedCategoryIndex: number;
   selectedStatusIndex: number;
+  categoryModalCategoryIndex: number;
 }
 
 export interface TaskLoadSnapshot {
@@ -26,6 +28,8 @@ export type TaskAction =
   | { type: "setSelectedStatusIndex"; index: number }
   | { type: "setSelectedIndex"; index: number }
   | { type: "setEditingTaskId"; id: string | null }
+  | { type: "setDeleteConfirmationTaskId"; id: string | null }
+  | { type: "setCategoryModalCategoryIndex"; index: number }
   | { type: "resetForm" }
   | { type: "loadSnapshot"; snapshot: TaskLoadSnapshot };
 
@@ -35,9 +39,11 @@ export const initialTaskState: TaskState = {
   screen: "list",
   selectedIndex: 0,
   editingTaskId: null,
+  deleteConfirmationTaskId: null,
   title: "",
   selectedCategoryIndex: 0,
   selectedStatusIndex: 0,
+  categoryModalCategoryIndex: -1,
 };
 
 function clampSelectedIndex(tasks: Task[], selectedIndex: number): number {
@@ -59,15 +65,21 @@ export function taskReducer(state: TaskState, action: TaskAction): TaskState {
       return { ...state, selectedIndex: action.index };
     case "setEditingTaskId":
       return { ...state, editingTaskId: action.id };
+    case "setDeleteConfirmationTaskId":
+      return { ...state, deleteConfirmationTaskId: action.id };
+    case "setCategoryModalCategoryIndex":
+      return { ...state, categoryModalCategoryIndex: action.index };
     case "resetForm":
       return {
         ...state,
         screen: "list",
         selectedIndex: 0,
         editingTaskId: null,
+        deleteConfirmationTaskId: null,
         title: "",
         selectedCategoryIndex: 0,
         selectedStatusIndex: 0,
+        categoryModalCategoryIndex: -1,
       };
     case "loadSnapshot":
       return {
