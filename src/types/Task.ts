@@ -1,110 +1,18 @@
 /**
- * @fileoverview Task Type Definitions
- * @module types/Task
+ * Core task domain types used across presentation, application, and persistence.
  *
- * @description
- * This module defines the core TypeScript types and interfaces for the
- * CLI-Do application. These types represent the domain model for tasks
- * and categories, serving as the authoritative source of truth for data
- * structures throughout the codebase.
- *
- * ## Type Hierarchy
- *
- * ```
- * TaskStatus (union type)
- * ├── "pending"
- * ├── "in_progress"
- * └── "completed"
- *
- * Task (interface)
- * ├── id: string
- * ├── title: string
- * ├── status: TaskStatus
- * ├── categoryId: string
- * ├── createdAt: number (Unix timestamp)
- * └── completedAt: number | null
- *
- * Category (interface)
- * ├── id: string
- * ├── name: string
- * └── createdAt: number (Unix timestamp)
- *
- * TaskInput (interface) - For creating tasks
- * ├── title: string
- * └── categoryId: string
- *
- * TaskUpdate (interface) - For updating tasks
- * ├── id: string (required)
- * ├── title?: string (optional)
- * ├── status?: TaskStatus (optional)
- * └── categoryId?: string (optional)
- * ```
- *
- * ## TaskStatus Enum
- *
- * TaskStatus represents the lifecycle stages of a task:
- *
- * - **pending (Abierta)**: Task is newly created and awaiting action
- * - **in_progress (En Proceso)**: Task is actively being worked on
- * - **completed (Cerrada)**: Task has been finished
- *
- * ## Timestamp Convention
- *
- * All timestamps use Unix epoch format (seconds since 1970-01-01).
- * This matches SQLite's DEFAULT (unixepoch()) behavior for consistency.
- *
- * ## Usage
- *
- * ```typescript
- * import type { Task, TaskStatus, Category } from './types/Task';
- *
- * const task: Task = {
- *   id: crypto.randomUUID(),
- *   title: 'Complete project',
- *   status: 'pending',
- *   categoryId: 'personal',
- *   createdAt: Math.floor(Date.now() / 1000),
- *   completedAt: null
- * };
- * ```
- *
- * @requires none (pure TypeScript)
- *
- * @see {@link context/TaskContext} for state management using these types
+ * This module is intentionally framework-free. It defines the language of the
+ * task model: statuses, records, category metadata, and helper functions for
+ * common derived values.
  */
 
 export type TaskStatus = "pending" | "in_progress" | "completed";
 
 /**
- * TaskStatus represents the lifecycle stages of a task:
+ * Persistent task record.
  *
- * - **pending (Open)**: Task is newly created and awaiting action
- * - **in_progress (In Progress)**: Task is actively being worked on
- * - **completed (Done)**: Task has been finished
- *
- * ## Timestamp Convention
- *
- * All timestamps use Unix epoch format (seconds since 1970-01-01).
- * This matches SQLite's DEFAULT (unixepoch()) behavior for consistency.
- *
- * ## Usage
- *
- * ```typescript
- * import type { Task, TaskStatus, Category } from './types/Task';
- *
- * const task: Task = {
- *   id: crypto.randomUUID(),
- *   title: 'Complete project',
- *   status: 'pending',
- *   categoryId: 'personal',
- *   createdAt: Math.floor(Date.now() / 1000),
- *   completedAt: null
- * };
- * ```
- *
- * @requires none (pure TypeScript)
- *
- * @see {@link context/TaskContext} for state management using these types
+ * A task is identified by `id` and carries both business data and lifecycle
+ * metadata. Timestamps use Unix seconds so they align with SQLite defaults.
  */
 export interface Task {
   id: string;
@@ -116,7 +24,10 @@ export interface Task {
 }
 
 /**
- * Category represents a task category.
+ * Task category record.
+ *
+ * Categories are used to group tasks into user-facing buckets such as
+ * Personal and Work.
  *
  * @interface Category
  */
@@ -127,9 +38,9 @@ export interface Category {
 }
 
 /**
- * TaskInput represents the data required to create a new task.
+ * Input required to create a new task.
  *
- * Used when submitting the create task form.
+ * This type is useful for form submission boundaries and repository calls.
  *
  * @interface TaskInput
  */
@@ -139,10 +50,10 @@ export interface TaskInput {
 }
 
 /**
- * TaskUpdate represents partial task data for updates.
+ * Partial update payload for a task.
  *
- * All fields except `id` are optional since updates may only
- * modify specific fields.
+ * The `id` identifies the record; the rest of the fields are optional because
+ * different update flows may only change part of the task.
  *
  * @interface TaskUpdate
  */
@@ -154,19 +65,12 @@ export interface TaskUpdate {
 }
 
 /**
- * Calculates the number of days taken to complete a task.
+ * Calculates the number of full days between creation and completion.
  *
- * @function getDaysTaken
- * @param {Task} task - The task to evaluate
- * @returns {number | null} Days taken, or null if incomplete
+ * Returns `null` if the task has not been completed yet.
  *
- * @example
- * ```typescript
- * const days = getDaysTaken(task);
- * if (days !== null) {
- *   console.log(`Completed in ${days} days`);
- * }
- * ```
+ * @param task - Task record to evaluate.
+ * @returns Days taken, or `null` if incomplete.
  */
 export function getDaysTaken(task: Task): number | null {
   if (!task.completedAt || !task.createdAt) return null;
@@ -175,17 +79,13 @@ export function getDaysTaken(task: Task): number | null {
 }
 
 /**
- * Formats the task duration as a human-readable string.
+ * Formats task duration for presentation.
  *
- * @function formatTaskDays
- * @param {Task} task - The task to format
- * @returns {string} Formatted string ("Hoy", "1 día", "N días")
+ * The function returns a localized English label because the rest of the UI
+ * currently uses English status terminology.
  *
- * @example
- * ```typescript
- * const formatted = formatTaskDays(task);
- * console.log(formatted); // "3 días"
- * ```
+ * @param task - Task record to format.
+ * @returns Human-readable duration string.
  */
 export function formatTaskDays(task: Task): string {
   const days = getDaysTaken(task);
