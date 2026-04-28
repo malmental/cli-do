@@ -3,16 +3,16 @@ import { Box, Text } from "ink";
 import { useTask } from "../context/TaskContext";
 
 export function Footer() {
-  const { meta } = useTask();
+  const { meta, state } = useTask();
   const { filteredTasks } = meta;
 
   return (
     <Box flexDirection="row" justifyContent="space-between" marginTop={1}>
-      <Text dim small>
-        {filteredTasks.length} tarea{filteredTasks.length !== 1 ? "s" : ""}
+      <Text color="gray">
+        {filteredTasks.length} task{filteredTasks.length !== 1 ? "s" : ""} | {state.screen} view
       </Text>
-      <Text dim small>
-        j/k: navegar | Enter: ver
+      <Text color="gray">
+        Ctrl+C to quit | H/Q/Esc: back
       </Text>
     </Box>
   );
