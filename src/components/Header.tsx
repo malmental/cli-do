@@ -12,7 +12,7 @@ export function Header() {
       borderColor="cyan"
     >
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Text bold color="cyan">CLI-Do</Text>
+        <Text bold color="cyan">CLI_Do</Text>
       </Box>
     </Box>
   );
