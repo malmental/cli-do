@@ -2,25 +2,24 @@ import React from "react";
 import { Box, Text } from "ink";
 import { useTask } from "../context/TaskContext";
 import { useTerminalSize } from "../hooks/useTerminalSize";
+import { useTaskPager } from "../hooks/useTaskPager";
 import { TaskListScreen } from "./TaskListScreen";
 import { ControlsPanel } from "../components/ControlsPanel";
 
+// Dashboard composition: hero area on top, paged task list on the left, controls on the right.
 export function TaskDashboardScreen() {
   const { state, meta } = useTask();
   const { rows } = useTerminalSize();
   const { selectedIndex } = state;
   const tasks = meta.filteredTasks;
-
-  const heroHeight = Math.max(4, Math.floor(rows * 0.22));
-  const contentRows = Math.max(8, rows - heroHeight - 8);
-  const visibleCount = Math.max(2, Math.floor(contentRows / 3));
-  const pageIndex = Math.floor(selectedIndex / visibleCount);
-  const start = pageIndex * visibleCount;
-  const visibleTasks = tasks.slice(start, start + visibleCount);
-  const relativeSelectedIndex = selectedIndex - start;
-  const pageLabel = tasks.length > visibleCount
-    ? `Page ${pageIndex + 1}/${Math.ceil(tasks.length / visibleCount)}`
-    : undefined;
+  const {
+    heroHeight,
+    contentRows,
+    visibleCount,
+    visibleTasks,
+    relativeSelectedIndex,
+    pageLabel,
+  } = useTaskPager(tasks, selectedIndex, rows);
 
   return (
     <Box flexDirection="column" flexGrow={1} gap={1}>
