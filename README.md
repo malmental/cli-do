@@ -1,16 +1,16 @@
-# CLI-Do
-
-**A beautiful task manager for your terminal.**
-
 ```
-  ░██████  ░██ ░██                   ░██
- ░██   ░██ ░██                       ░██
-░██        ░██ ░██             ░████████  ░███████
-░██        ░██ ░██            ░██    ░██ ░██    ░██
-░██        ░██ ░██            ░██    ░██ ░██    ░██
- ░██   ░██ ░██ ░██            ░██   ░███ ░██    ░██
-  ░██████  ░██ ░██░██████████  ░█████░██  ░███████
+╭───────────────────────────────────────────────────────╮
+│    ░██████  ░██ ░██                   ░██             │
+│   ░██   ░██ ░██                       ░██             │
+│  ░██        ░██ ░██             ░████████  ░███████   │
+│  ░██        ░██ ░██            ░██    ░██ ░██    ░██  │
+│  ░██        ░██ ░██            ░██    ░██ ░██    ░██  │
+│   ░██   ░██ ░██ ░██            ░██   ░███ ░██    ░██  │
+│    ░██████  ░██ ░██░██████████  ░█████░██  ░███████   │
+│                                                       │
+╰───────────────────────────────────────────────────────╯
 ```
+**A simple task manager for your terminal.**
 
 ## Overview
 
@@ -40,7 +40,7 @@ CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Bu
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/cli-do.git
+git clone https://github.com/malmental/cli-do.git
 cd cli-do
 
 # Install dependencies
@@ -57,6 +57,10 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 ---
 
 ## Keyboard Shortcuts
+
+**Developer note IMPORTANT:**
+
+The action of going 'back' has to be Shift + Tab and sometimes you have to press any other key to trigger the screen change.
 
 ### Navigation (List View)
 
@@ -76,7 +80,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | Key | Action |
 |-----|--------|
 | `Enter` | Save task |
-| `H` / `Q` / `Esc` | Cancel and go back |
+| `Shift + Tab` | Cancel and go back |
 | `←` / `→` | Change category |
 | `↑` / `↓` | Change status |
 | `Backspace` | Delete character |
@@ -85,7 +89,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 
 | Key | Action |
 |-----|--------|
-| `H` / `Q` / `Esc` | Go back to list |
+| `Shift + Tab` | Go back to list |
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
@@ -97,36 +101,36 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 ```
 cli-do/
 ├── src/
-│   ├── index.tsx           # Entry point
-│   ├── App.tsx             # Main app shell + splash screen + key routing
+│   ├── index.tsx                         # Entry point
+│   ├── App.tsx                           # Main app shell + splash screen + key routing
 │   ├── application/
 │   │   └── task/
 │   │       ├── sqlite-task-repository.ts # SQLite persistence adapter
 │   │       ├── task-repository.ts        # Repository contract
 │   │       └── task-selectors.ts         # Derived task selectors
 │   ├── context/
-│   │   ├── TaskContext.tsx  # Context provider + repository wiring
-│   │   ├── task-constants.ts # Shared status labels/colors/options
-│   │   └── task-state.ts    # Reducer and UI state model
+│   │   ├── TaskContext.tsx               # Context provider + repository wiring
+│   │   ├── task-constants.ts             # Shared status labels/colors/options
+│   │   └── task-state.ts                 # Reducer and UI state model
 │   ├── components/
-│   │   ├── Header.tsx      # App header
-│   │   ├── Footer.tsx      # Task count + navigation hints
-│   │   └── ControlsPanel.tsx # Dashboard control legend
+│   │   ├── Header.tsx                    # App header
+│   │   ├── Footer.tsx                    # Task count + navigation hints
+│   │   └── ControlsPanel.tsx             # Dashboard control legend
 │   ├── screens/
-│   │   ├── TaskDashboardScreen.tsx # Dashboard shell with paged list + controls
-│   │   ├── TaskListScreen.tsx      # Paged task list renderer
-│   │   ├── TaskFormScreen.tsx      # Create/edit form
-│   │   └── TaskDetailScreen.tsx    # Task detail view
+│   │   ├── TaskDashboardScreen.tsx       # Dashboard shell with paged list + controls
+│   │   ├── TaskListScreen.tsx            # Paged task list renderer
+│   │   ├── TaskFormScreen.tsx            # Create/edit form
+│   │   └── TaskDetailScreen.tsx          # Task detail view
 │   ├── hooks/
-│   │   ├── useAppKeyboard.ts # Global keyboard router for the app shell
-│   │   ├── useTerminalSize.ts   # Terminal size helper for responsive layout
-│   │   └── useTaskPager.ts      # Paged dashboard window helper
+│   │   ├── useAppKeyboard.ts             # Global keyboard router for the app shell
+│   │   ├── useTerminalSize.ts            # Terminal size helper for responsive layout
+│   │   └── useTaskPager.ts               # Paged dashboard window helper
 │   ├── db/
-│   │   ├── database.ts     # SQLite singleton
-│   │   └── schema.ts       # Table definitions
+│   │   ├── database.ts                   # SQLite singleton
+│   │   └── schema.ts                     # Table definitions
 │   └── types/
-│       └── Task.ts         # TypeScript types
-├── dist/                  # Build output
+│       └── Task.ts                       # TypeScript types
+├── dist/                                 # Build output
 ├── package.json
 └── README.md
 ```
