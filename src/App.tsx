@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { TaskProvider, useTask } from "./context/TaskContext";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import { ConfirmDeleteModal } from "./components/ConfirmDeleteModal";
 import { TaskDashboardScreen } from "./screens/TaskDashboardScreen";
 import { TaskFormScreen } from "./screens/TaskFormScreen";
 import { TaskDetailScreen } from "./screens/TaskDetailScreen";
@@ -21,7 +22,7 @@ const ASCII_LOGO = `
 function SplashView({ onStart }: { onStart: () => void }) {
   useInput(() => {
     onStart();
-  });
+  }, { isActive: true });
 
   return (
     <Box flexDirection="column" justifyContent="center" alignItems="center" flexGrow={1}>
@@ -52,6 +53,7 @@ function AppContent() {
   const title = state.title;
   const selectedCategoryIndex = state.selectedCategoryIndex;
   const selectedStatusIndex = state.selectedStatusIndex;
+  const deleteConfirmationTaskId = state.deleteConfirmationTaskId;
   const selectedTask = meta.selectedTask;
   useAppKeyboard({
     screen,
@@ -62,6 +64,7 @@ function AppContent() {
     selectedCategoryIndex,
     selectedStatusIndex,
     selectedTask,
+    deleteConfirmationTaskId,
     actions,
   });
 
@@ -74,10 +77,21 @@ function AppContent() {
     mainContent = <TaskDashboardScreen />;
   }
 
+  const deleteConfirmationTask = deleteConfirmationTaskId
+    ? tasks.find((task) => task.id === deleteConfirmationTaskId) ?? null
+    : null;
+
   return (
     <Box key={screen} flexDirection="column" flexGrow={1} padding={1}>
-      <Header />
-      {mainContent}
+      {screen !== "list" && <Header />}
+      <Box flexDirection="column" flexGrow={1}>
+        {mainContent}
+        {deleteConfirmationTask && (
+          <Box marginTop={1} justifyContent="center">
+            <ConfirmDeleteModal taskTitle={deleteConfirmationTask.title} />
+          </Box>
+        )}
+      </Box>
       <Footer />
     </Box>
   );
@@ -85,6 +99,12 @@ function AppContent() {
 
 export function App() {
   const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    return () => {
+      process.stdout.write("\x1b[2J\x1b[H");
+    };
+  }, []);
 
   return (
     <TaskProvider>

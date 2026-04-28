@@ -18,12 +18,17 @@ interface TaskActions {
   setSelectedStatusIndex: (index: number) => void;
   setSelectedIndex: (index: number) => void;
   setEditingTaskId: (id: string | null) => void;
+  setDeleteConfirmationTaskId: (id: string | null) => void;
+  setCategoryModalCategoryIndex: (index: number) => void;
   createTask: () => void;
   updateTask: () => void;
   completeTask: (id: string) => void;
   startTask: (id: string) => void;
   pendingTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  requestDeleteTask: (id: string) => void;
+  confirmDeleteTask: () => void;
+  cancelDeleteTask: () => void;
   loadData: () => void;
 }
 
@@ -46,14 +51,9 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(taskReducer, initialTaskState);
   const repositoryRef = useRef<TaskRepository>(createSqliteTaskRepository());
 
-  const clearTerminal = useCallback(() => {
-    process.stdout.write("\x1b[2J\x1b[H");
-  }, []);
-
   const setScreen = useCallback((nextScreen: Screen) => {
-    clearTerminal();
     dispatch({ type: "setScreen", screen: nextScreen });
-  }, [clearTerminal]);
+  }, []);
 
   const loadData = useCallback(() => {
     try {
@@ -70,6 +70,10 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
 
   const resetForm = useCallback(() => {
     dispatch({ type: "resetForm" });
+  }, []);
+
+  const cancelDeleteTask = useCallback(() => {
+    dispatch({ type: "setDeleteConfirmationTaskId", id: null });
   }, []);
 
   const createTask = useCallback(() => {
@@ -141,6 +145,17 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     loadData();
   }, [loadData]);
 
+  const requestDeleteTask = useCallback((id: string) => {
+    dispatch({ type: "setDeleteConfirmationTaskId", id });
+  }, []);
+
+  const confirmDeleteTask = useCallback(() => {
+    if (!state.deleteConfirmationTaskId) return;
+    deleteTask(state.deleteConfirmationTaskId);
+    cancelDeleteTask();
+    resetForm();
+  }, [cancelDeleteTask, deleteTask, state.deleteConfirmationTaskId, resetForm]);
+
   const actions: TaskActions = {
     setScreen,
     setTitle: (title: string) => dispatch({ type: "setTitle", title }),
@@ -148,12 +163,17 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setSelectedStatusIndex: (index: number) => dispatch({ type: "setSelectedStatusIndex", index }),
     setSelectedIndex: (index: number) => dispatch({ type: "setSelectedIndex", index }),
     setEditingTaskId: (id: string | null) => dispatch({ type: "setEditingTaskId", id }),
+    setDeleteConfirmationTaskId: (id: string | null) => dispatch({ type: "setDeleteConfirmationTaskId", id }),
+    setCategoryModalCategoryIndex: (index: number) => dispatch({ type: "setCategoryModalCategoryIndex", index }),
     createTask,
     updateTask,
     completeTask,
     startTask,
     pendingTask,
     deleteTask,
+    requestDeleteTask,
+    confirmDeleteTask,
+    cancelDeleteTask,
     loadData,
   };
 
