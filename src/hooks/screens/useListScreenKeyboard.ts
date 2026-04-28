@@ -36,11 +36,17 @@ export function useListScreenKeyboard({
       return?: boolean;
       shift?: boolean;
       tab?: boolean;
+      ctrl?: boolean;
       upArrow?: boolean;
       downArrow?: boolean;
       backspace?: boolean;
       delete?: boolean;
     }) => {
+      if (input === "x" && key.ctrl && selectedTask) {
+        actions.requestDeleteTask(selectedTask.id);
+        return true;
+      }
+
       if (input === "n") {
         actions.setScreen("create");
         actions.setTitle("");
@@ -94,11 +100,6 @@ export function useListScreenKeyboard({
 
       if (input === "p" && selectedTask && selectedTask.status !== "pending") {
         actions.pendingTask(selectedTask.id);
-        return true;
-      }
-
-      if (input === "x" && selectedTask) {
-        actions.requestDeleteTask(selectedTask.id);
         return true;
       }
 

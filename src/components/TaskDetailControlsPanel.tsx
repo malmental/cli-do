@@ -50,7 +50,7 @@ export function TaskDetailControlsPanel() {
           title="Task"
           color="red"
           items={[
-            { key: "X", label: "delete task" },
+            { key: "Ctrl+X", label: "delete task" },
           ]}
         />
 

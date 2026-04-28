@@ -52,7 +52,7 @@ export function ControlsPanel() {
           items={[
             { key: "N", label: "new task" },
             { key: "E", label: "edit selected task" },
-            { key: "X", label: "delete selected task" },
+            { key: "Ctrl+X", label: "delete selected task" },
           ]}
         />
       </Box>

@@ -23,6 +23,7 @@ export function useDetailScreenKeyboard({
   const handleKeyDown = useCallback(
     (input: string, key: {
       shift?: boolean;
+      ctrl?: boolean;
       tab?: boolean;
       return?: boolean;
     }) => {
@@ -46,7 +47,7 @@ export function useDetailScreenKeyboard({
         return true;
       }
 
-      if (input === "x" && selectedTask) {
+      if (input === "x" && key.ctrl && selectedTask) {
         actions.requestDeleteTask(selectedTask.id);
         return true;
       }
