@@ -54,7 +54,7 @@ export function TaskFormScreen() {
         {" | "}
         <Text color="green">↑↓ = status</Text>
         {isEdit ? " | " : ""}
-        {isEdit ? <Text color="red">X = delete</Text> : null}
+        {isEdit ? <Text color="red">Ctrl+X = delete</Text> : null}
       </Text>
     </Box>
   );

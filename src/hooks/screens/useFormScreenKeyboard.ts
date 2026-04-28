@@ -39,6 +39,7 @@ export function useFormScreenKeyboard({
     (input: string, key: {
       return?: boolean;
       shift?: boolean;
+      ctrl?: boolean;
       tab?: boolean;
       upArrow?: boolean;
       downArrow?: boolean;
@@ -58,7 +59,7 @@ export function useFormScreenKeyboard({
         return true;
       }
 
-      if (input === "x" && screen === "edit" && selectedTask) {
+      if (input === "x" && key.ctrl && screen === "edit" && selectedTask) {
         actions.requestDeleteTask(selectedTask.id);
         return true;
       }

@@ -103,7 +103,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
-| `x` | Delete task (with confirmation) |
+| `Ctrl+x` | Delete task (with confirmation) |
 
 ### Forms (Create/Edit View)
 
@@ -114,7 +114,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | `←` / `→` | Change category |
 | `↑` / `↓` | Change status |
 | `Backspace` | Delete character |
-| `x` | Delete task (Edit mode only) |
+| `Ctrl+x` | Delete task (Edit mode only) |
 
 ### Detail View
 
@@ -124,7 +124,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
-| `x` | Delete task |
+| `Ctrl+x` | Delete task |
 
 ---
 
