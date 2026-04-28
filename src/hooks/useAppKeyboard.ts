@@ -1,22 +1,12 @@
 import { useInput } from "ink";
-import type { Category, Task } from "../types/Task";
-import type { Screen } from "../context/task-state";
+import type { Category, Task, Screen } from "../types/Task";
 import { statusOptions } from "../context/task-constants";
+import { useListScreenKeyboard } from "./screens/useListScreenKeyboard";
+import { useFormScreenKeyboard } from "./screens/useFormScreenKeyboard";
+import { useDetailScreenKeyboard } from "./screens/useDetailScreenKeyboard";
 
-type InputKey = {
-  ctrl: boolean;
-  return: boolean;
-  tab: boolean;
-  shift: boolean;
-  backspace: boolean;
-  delete: boolean;
-  leftArrow: boolean;
-  rightArrow: boolean;
-  upArrow: boolean;
-  downArrow: boolean;
-};
+export type { Screen } from "../types/Task";
 
-// Central keyboard router for the app shell. It keeps Ink input handling out of App.tsx.
 interface AppKeyboardActions {
   setScreen: (screen: Screen) => void;
   setTitle: (title: string) => void;
@@ -30,7 +20,6 @@ interface AppKeyboardActions {
   completeTask: (id: string) => void;
   startTask: (id: string) => void;
   pendingTask: (id: string) => void;
-  deleteTask: (id: string) => void;
   requestDeleteTask: (id: string) => void;
   confirmDeleteTask: () => void;
   cancelDeleteTask: () => void;
@@ -61,19 +50,64 @@ export function useAppKeyboard({
   deleteConfirmationTaskId,
   actions,
 }: UseAppKeyboardParams) {
-  const isBackKey = (key: InputKey) => key.tab && key.shift;
-
-  const goToList = (resetForm = false) => {
-    actions.setScreen("list");
-
-    if (resetForm) {
-      actions.setTitle("");
-      actions.setEditingTaskId(null);
-      actions.setSelectedCategoryIndex(0);
-      actions.setSelectedStatusIndex(0);
-      actions.setSelectedIndex(0);
-    }
+  const listActions = {
+    setScreen: actions.setScreen,
+    setSelectedIndex: actions.setSelectedIndex,
+    setTitle: actions.setTitle,
+    setSelectedCategoryIndex: actions.setSelectedCategoryIndex,
+    setSelectedStatusIndex: actions.setSelectedStatusIndex,
+    setEditingTaskId: actions.setEditingTaskId,
+    createTask: actions.createTask,
+    updateTask: actions.updateTask,
+    completeTask: actions.completeTask,
+    startTask: actions.startTask,
+    pendingTask: actions.pendingTask,
+    requestDeleteTask: actions.requestDeleteTask,
   };
+
+  const formActions = {
+    setScreen: actions.setScreen,
+    setTitle: actions.setTitle,
+    setSelectedCategoryIndex: actions.setSelectedCategoryIndex,
+    setSelectedStatusIndex: actions.setSelectedStatusIndex,
+    setSelectedIndex: actions.setSelectedIndex,
+    setEditingTaskId: actions.setEditingTaskId,
+    setDeleteConfirmationTaskId: actions.setDeleteConfirmationTaskId,
+    createTask: actions.createTask,
+    updateTask: actions.updateTask,
+    requestDeleteTask: actions.requestDeleteTask,
+  };
+
+  const detailActions = {
+    setScreen: actions.setScreen,
+    setSelectedIndex: actions.setSelectedIndex,
+    completeTask: actions.completeTask,
+    startTask: actions.startTask,
+    pendingTask: actions.pendingTask,
+    requestDeleteTask: actions.requestDeleteTask,
+  };
+
+  const { handleKeyDown: handleListKey } = useListScreenKeyboard({
+    tasks,
+    selectedIndex,
+    selectedTask,
+    actions: listActions,
+  });
+
+  const { handleKeyDown: handleFormKey } = useFormScreenKeyboard({
+    screen,
+    title,
+    categories,
+    selectedCategoryIndex,
+    selectedStatusIndex,
+    selectedTask,
+    actions: formActions,
+  });
+
+  const { handleKeyDown: handleDetailKey } = useDetailScreenKeyboard({
+    selectedTask,
+    actions: detailActions,
+  });
 
   useInput((input, key) => {
     if (deleteConfirmationTaskId) {
@@ -81,142 +115,25 @@ export function useAppKeyboard({
         actions.confirmDeleteTask();
         return;
       }
-      if (input === "n" || isBackKey(key)) {
+      if (input === "n" || (key.shift && key.tab)) {
         actions.cancelDeleteTask();
         return;
       }
       return;
     }
 
+    if (screen === "list") {
+      handleListKey(input, key);
+      return;
+    }
+
     if (screen === "create" || screen === "edit") {
-      if (isBackKey(key)) {
-        actions.setScreen("list");
-        actions.setTitle("");
-        actions.setEditingTaskId(null);
-        actions.setSelectedCategoryIndex(0);
-        actions.setSelectedStatusIndex(0);
-        actions.setSelectedIndex(0);
-        actions.setDeleteConfirmationTaskId(null);
-        return;
-      }
-      if (input === "x" && screen === "edit" && selectedTask) {
-        actions.requestDeleteTask(selectedTask.id);
-        return;
-      }
-      if (key.return) {
-        if (screen === "create") {
-          actions.createTask();
-        } else {
-          actions.updateTask();
-        }
-        return;
-      }
-      if (key.backspace || key.delete) {
-        actions.setTitle(title.slice(0, -1));
-        return;
-      }
-      if (key.leftArrow) {
-        if (selectedCategoryIndex > 0) actions.setSelectedCategoryIndex(selectedCategoryIndex - 1);
-        return;
-      }
-      if (key.rightArrow) {
-        if (selectedCategoryIndex < categories.length - 1) actions.setSelectedCategoryIndex(selectedCategoryIndex + 1);
-        return;
-      }
-      if (key.upArrow) {
-        if (selectedStatusIndex > 0) actions.setSelectedStatusIndex(selectedStatusIndex - 1);
-        return;
-      }
-      if (key.downArrow) {
-        if (selectedStatusIndex < statusOptions.length - 1) actions.setSelectedStatusIndex(selectedStatusIndex + 1);
-        return;
-      }
-      if (input) {
-        actions.setTitle(title + input);
-        return;
-      }
+      handleFormKey(input, key);
       return;
     }
 
     if (screen === "detail") {
-      if (isBackKey(key)) {
-        goToList();
-        return;
-      }
-      if (input === "d" && selectedTask && selectedTask.status !== "completed") {
-        actions.completeTask(selectedTask.id);
-        return;
-      }
-      if (input === "s" && selectedTask && selectedTask.status !== "in_progress") {
-        actions.startTask(selectedTask.id);
-        return;
-      }
-      if (input === "p" && selectedTask && selectedTask.status !== "pending") {
-        actions.pendingTask(selectedTask.id);
-        return;
-      }
-      return;
-    }
-
-    if (input === "n") {
-      actions.setScreen("create");
-      actions.setTitle("");
-      actions.setEditingTaskId(null);
-      actions.setSelectedCategoryIndex(0);
-      actions.setSelectedStatusIndex(0);
-      actions.setSelectedIndex(0);
-      return;
-    }
-
-    if (input === "j" || key.downArrow) {
-      if (tasks.length > 0) {
-        actions.setSelectedIndex(Math.min(selectedIndex + 1, tasks.length - 1));
-      }
-      return;
-    }
-
-    if (input === "k" || key.upArrow) {
-      if (tasks.length > 0) {
-        actions.setSelectedIndex(Math.max(0, selectedIndex - 1));
-      }
-      return;
-    }
-
-    if (key.return) {
-      if (tasks.length > 0) {
-        actions.setScreen("detail");
-      }
-      return;
-    }
-
-    if (input === "e" && selectedTask) {
-      actions.setTitle(selectedTask.title);
-      const catIdx = categories.findIndex((c) => c.id === selectedTask.categoryId);
-      actions.setSelectedCategoryIndex(catIdx >= 0 ? catIdx : 0);
-      const statusIdx = statusOptions.findIndex((s) => s.value === selectedTask.status);
-      actions.setSelectedStatusIndex(statusIdx >= 0 ? statusIdx : 0);
-      actions.setEditingTaskId(selectedTask.id);
-      actions.setScreen("edit");
-      return;
-    }
-
-    if (input === "d" && selectedTask && selectedTask.status !== "completed") {
-      actions.completeTask(selectedTask.id);
-      return;
-    }
-
-    if (input === "s" && selectedTask && selectedTask.status !== "in_progress") {
-      actions.startTask(selectedTask.id);
-      return;
-    }
-
-    if (input === "p" && selectedTask && selectedTask.status !== "pending") {
-      actions.pendingTask(selectedTask.id);
-      return;
-    }
-
-    if (input === "x" && selectedTask) {
-      actions.requestDeleteTask(selectedTask.id);
+      handleDetailKey(input, key);
       return;
     }
   });

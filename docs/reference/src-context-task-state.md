@@ -18,7 +18,7 @@ This file illustrates the value of a reducer in a terminal application. Instead 
 
 ## Key Concepts
 
-- `screen` expresses which terminal view is active.
+- `screen` expresses which terminal view is active (defined in `src/types/Task.ts`).
 - `selectedIndex` tracks list navigation.
 - `editingTaskId` links the form to an existing task during edit mode.
 - `selectedCategoryIndex` and `selectedStatusIndex` are form-local choices.
@@ -26,7 +26,7 @@ This file illustrates the value of a reducer in a terminal application. Instead 
 
 ## Dependencies
 
-- Depends only on `src/types/Task.ts`.
+- Depends on `src/types/Task.ts` for `Screen`, `Task`, `Category`.
 - Does not import React.
 - Does not import database code.
 
