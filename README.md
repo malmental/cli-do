@@ -12,6 +12,34 @@
 ```
 **A simple task manager for your terminal.**
 
+## Table of Contents
+
+- [Overview](#overview)
+  - [Features](#features)
+  - [Demo](#demo)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [First Run](#first-run)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Navigation (List View)](#navigation-list-view)
+  - [Forms (Create/Edit View)](#forms-createedit-view)
+  - [Detail View](#detail-view)
+- [Project Structure](#project-structure)
+- [Architecture](#architecture)
+  - [State Management](#state-management)
+  - [Database](#database)
+  - [Screen Navigation](#screen-navigation)
+  - [Presentation Layout](#presentation-layout)
+  - [Documentation](#documentation)
+- [Development](#development)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
+---
+
 ## Overview
 
 CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Built with Ink + React, it combines the speed of the command line with a polished visual interface.
@@ -26,6 +54,12 @@ CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Bu
 - **Splash screen** — Beautiful ASCII logo on startup
 - **Persistent storage** — SQLite database, no cloud required
 - **Color-coded status** — Yellow (Open), Cyan (In Progress), Green (Done)
+
+---
+
+## Demo
+
+![CLI-Do Demo](assets/demo.gif)
 
 ---
 
@@ -58,10 +92,6 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 
 ## Keyboard Shortcuts
 
-**Developer note IMPORTANT:**
-
-The action of going 'back' has to be Shift + Tab and sometimes you have to press any other key to trigger the screen change.
-
 ### Navigation (List View)
 
 | Key | Action |
@@ -73,26 +103,28 @@ The action of going 'back' has to be Shift + Tab and sometimes you have to press
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
-| `x` | Delete task |
+| `x` | Delete task (with confirmation) |
 
 ### Forms (Create/Edit View)
 
 | Key | Action |
 |-----|--------|
 | `Enter` | Save task |
-| `Shift + Tab` | Cancel and go back |
+| `Shift+Tab + any key` | Cancel and go back |
 | `←` / `→` | Change category |
 | `↑` / `↓` | Change status |
 | `Backspace` | Delete character |
+| `x` | Delete task (Edit mode only) |
 
 ### Detail View
 
 | Key | Action |
 |-----|--------|
-| `Shift + Tab` | Go back to list |
+| `Shift+Tab + any key` | Go back to list |
 | `d` | Mark as Done |
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
+| `x` | Delete task |
 
 ---
 
