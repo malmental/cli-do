@@ -32,11 +32,8 @@
   - [Screen Navigation](#screen-navigation)
   - [Presentation Layout](#presentation-layout)
   - [Documentation](#documentation)
-- [Development](#development)
-- [Roadmap](#roadmap)
+- [Roadmap for future features](#roadmap)
 - [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -59,7 +56,7 @@ CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Bu
 
 ## Demo
 
-![CLI-Do Demo](assets/demo.gif)
+![CLI-Do Demo](assets/cli-do-demo.gif)
 
 ---
 
@@ -208,22 +205,7 @@ The dashboard view uses a fixed-height hero area and a paged task window so the 
 
 ---
 
-## Development
-
-```bash
-# Run in development mode with hot reload
-bun dev
-
-# Build for production
-bun run build
-
-# Type check
-npx tsc --noEmit
-```
-
----
-
-## Roadmap
+## Roadmap for future features
 
 - [ ] Custom categories (add/remove)
 - [ ] Search/filter tasks
@@ -241,18 +223,3 @@ npx tsc --noEmit
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing`)
 5. Open a Pull Request
-
----
-
-## License
-
-MIT — use it however you want.
-
----
-
-## Acknowledgments
-
-Built with:
-- [Bun](https://bun.sh/) — JavaScript runtime
-- [Ink](https://github.com/vadimdemedes/ink) — React for CLIs
-- [SQLite](https://www.sqlite.org/) — Embedded database
