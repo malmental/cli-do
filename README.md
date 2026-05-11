@@ -1,6 +1,8 @@
-![CLI-Do](assets/cli-do.png)
+<div align="center">
 
-**A simple task manager for your terminal.**
+<img src="assets/cli-do.png" width="600" />
+
+</div>
 
 ## Table of Contents
 
