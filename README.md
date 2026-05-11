@@ -1,15 +1,5 @@
-```
-╭───────────────────────────────────────────────────────╮
-│    ░██████  ░██ ░██                   ░██             │
-│   ░██   ░██ ░██                       ░██             │
-│  ░██        ░██ ░██             ░████████  ░███████   │
-│  ░██        ░██ ░██            ░██    ░██ ░██    ░██  │
-│  ░██        ░██ ░██            ░██    ░██ ░██    ░██  │
-│   ░██   ░██ ░██ ░██            ░██   ░███ ░██    ░██  │
-│    ░██████  ░██ ░██░██████████  ░█████░██  ░███████   │
-│                                                       │
-╰───────────────────────────────────────────────────────╯
-```
+![CLI-Do](assets/cli-do.png)
+
 **A simple task manager for your terminal.**
 
 ## Table of Contents
@@ -131,7 +121,7 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 cli-do/
 ├── src/
 │   ├── index.tsx                         # Entry point
-│   ├── App.tsx                           # Main app shell + splash screen + key routing
+│   ├── App.tsx                           # Main app shell + key routing
 │   ├── application/
 │   │   └── task/
 │   │       ├── sqlite-task-repository.ts # SQLite persistence adapter
@@ -146,13 +136,13 @@ cli-do/
 │   │   ├── Footer.tsx                    # Task count + navigation hints
 │   │   └── ControlsPanel.tsx             # Dashboard control legend
 │   ├── screens/
-│   │   ├── TaskDashboardScreen.tsx       # Dashboard shell with paged list + controls
+│   │   ├── TaskDashboardScreen.tsx       # Dashboard with paged list + controls
 │   │   ├── TaskListScreen.tsx            # Paged task list renderer
 │   │   ├── TaskFormScreen.tsx            # Create/edit form
 │   │   └── TaskDetailScreen.tsx          # Task detail view
 │   ├── hooks/
-│   │   ├── useAppKeyboard.ts             # Global keyboard router for the app shell
-│   │   ├── useTerminalSize.ts            # Terminal size helper for responsive layout
+│   │   ├── useAppKeyboard.ts             # Keyboard router for the app shell
+│   │   ├── useTerminalSize.ts            # Terminal helper for responsive layout
 │   │   └── useTaskPager.ts               # Paged dashboard window helper
 │   ├── db/
 │   │   ├── database.ts                   # SQLite singleton
