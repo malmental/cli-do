@@ -33,6 +33,8 @@
 
 CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Built with Ink + React, it combines the speed of the command line with a polished visual interface.
 
+![CLI-Do Demo](assets/cli-do-demo.gif)
+
 ### Features
 
 - **Keyboard-first design** — No mouse required
@@ -43,12 +45,6 @@ CLI-Do is a keyboard-driven task manager that runs directly in your terminal. Bu
 - **Splash screen** — Beautiful ASCII logo on startup
 - **Persistent storage** — SQLite database, no cloud required
 - **Color-coded status** — Yellow (Open), Cyan (In Progress), Green (Done)
-
----
-
-## Demo
-
-![CLI-Do Demo](assets/cli-do-demo.gif)
 
 ---
 
@@ -114,47 +110,6 @@ When you first launch CLI-Do, you'll see the splash screen with the ASCII logo. 
 | `s` | Mark as In Progress |
 | `p` | Mark as Open |
 | `Ctrl+x` | Delete task |
-
----
-
-## Project Structure
-
-```
-cli-do/
-├── src/
-│   ├── index.tsx                         # Entry point
-│   ├── App.tsx                           # Main app shell + key routing
-│   ├── application/
-│   │   └── task/
-│   │       ├── sqlite-task-repository.ts # SQLite persistence adapter
-│   │       ├── task-repository.ts        # Repository contract
-│   │       └── task-selectors.ts         # Derived task selectors
-│   ├── context/
-│   │   ├── TaskContext.tsx               # Context provider + repository wiring
-│   │   ├── task-constants.ts             # Shared status labels/colors/options
-│   │   └── task-state.ts                 # Reducer and UI state model
-│   ├── components/
-│   │   ├── Header.tsx                    # App header
-│   │   ├── Footer.tsx                    # Task count + navigation hints
-│   │   └── ControlsPanel.tsx             # Dashboard control legend
-│   ├── screens/
-│   │   ├── TaskDashboardScreen.tsx       # Dashboard with paged list + controls
-│   │   ├── TaskListScreen.tsx            # Paged task list renderer
-│   │   ├── TaskFormScreen.tsx            # Create/edit form
-│   │   └── TaskDetailScreen.tsx          # Task detail view
-│   ├── hooks/
-│   │   ├── useAppKeyboard.ts             # Keyboard router for the app shell
-│   │   ├── useTerminalSize.ts            # Terminal helper for responsive layout
-│   │   └── useTaskPager.ts               # Paged dashboard window helper
-│   ├── db/
-│   │   ├── database.ts                   # SQLite singleton
-│   │   └── schema.ts                     # Table definitions
-│   └── types/
-│       └── Task.ts                       # TypeScript types
-├── dist/                                 # Build output
-├── package.json
-└── README.md
-```
 
 ---
 
